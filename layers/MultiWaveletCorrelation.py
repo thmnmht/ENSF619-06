@@ -7,7 +7,7 @@ from torch import Tensor
 from typing import List, Tuple
 import math
 from functools import partial
-from einops import rearrange, reduce, repeat
+# from einops import rearrange, reduce, repeat
 from torch import nn, einsum, diagonal
 from math import log2, ceil
 import pdb
