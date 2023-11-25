@@ -59,9 +59,9 @@ def run_inference_loop():
         dec_inp = torch.cat([batch_y[:, :args.label_len, :], dec_inp], dim=1).float()
         pred = model(batch_x, batch_x_mark, dec_inp, batch_y_mark).detach()
 
-        x_np = data_set.inverse_transform(batch_x[i,:,:].detach().numpy())[:,0]
-        y_np = data_set.inverse_transform(batch_y[i,-args.pred_len:,:].detach().numpy())[:,0]
-        pred_np = data_set.inverse_transform(pred[i,:,:].detach().numpy())[:,0]
+        x_np = data_set.inverse_transform(batch_x[0,:,:].detach().numpy())[:,0]
+        y_np = data_set.inverse_transform(batch_y[0,-args.pred_len:,:].detach().numpy())[:,0]
+        pred_np = data_set.inverse_transform(pred[0,:,:].detach().numpy())[:,0]
 
         global_input_output_pairs.append({
             'input': x_np,
