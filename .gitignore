@@ -1,0 +1,15 @@
+fedformerenv/
+__pycache__/
+scripts/
+results/
+test_results/
+result.txt
+logs/
+dataset/electricity
+dataset/ETT-small
+dataset/exchange_rate
+dataset/illness
+dataset/traffic
+dataset/weather
+dataset/.DS_Store
+checkpoints/
