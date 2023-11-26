@@ -1,4 +1,5 @@
 from flask import Flask, jsonify
+from flask_cors import CORS
 import torch
 import time
 from models.Ensemble import Model as Ensemble
@@ -7,6 +8,7 @@ from get_args import get_args
 
 
 app = Flask(__name__)
+CORS(app)
 
 args = get_args()
 path = 'checkpoints/custom_Ensemble_random_modes64_custom_ftS_sl96_ll48_pl96_dm512_nh8_el2_dl1_df2048_fc3_ebtimeF_dtTrue_test_0'
