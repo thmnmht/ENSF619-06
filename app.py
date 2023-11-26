@@ -33,6 +33,7 @@ def get_input():
 @app.route('/get-prediction', methods=['GET'])
 def get_output():
     # Return the most recent
+    run_inference_loop()
     if global_input_output_pairs:
         io_pair = global_input_output_pairs[-1]
         return jsonify({'prediction': io_pair['output'].tolist()})
@@ -41,45 +42,35 @@ def get_output():
 
 
 def run_inference_loop():
-    # Iterates over the DataLoader
 
-    # batch_num = 0
-    for i, (batch_x, batch_y, batch_x_mark, batch_y_mark) in enumerate(data_loader):
-        # Sleep 5 second
-        time.sleep(5)
-        # if i == batch_num:
-        batch_x = batch_x.float()
-        batch_y = batch_y.float()
 
-        batch_x_mark = batch_x_mark.float()
-        batch_y_mark = batch_y_mark.float()
+    batch_x, batch_y, batch_x_mark, batch_y_mark = next(iter(data_loader))
+       
+    batch_x = batch_x.float()
+    batch_y = batch_y.float()
 
-        # decoder input
-        dec_inp = torch.zeros_like(batch_y[:, -args.pred_len:, :]).float()
-        dec_inp = torch.cat([batch_y[:, :args.label_len, :], dec_inp], dim=1).float()
-        pred = model(batch_x, batch_x_mark, dec_inp, batch_y_mark).detach()
+    batch_x_mark = batch_x_mark.float()
+    batch_y_mark = batch_y_mark.float()
 
-        x_np = data_set.inverse_transform(batch_x[0,:,:].detach().numpy())[:,0]
-        y_np = data_set.inverse_transform(batch_y[0,-args.pred_len:,:].detach().numpy())[:,0]
-        pred_np = data_set.inverse_transform(pred[0,:,:].detach().numpy())[:,0]
+    # decoder input
+    dec_inp = torch.zeros_like(batch_y[:, -args.pred_len:, :]).float()
+    dec_inp = torch.cat([batch_y[:, :args.label_len, :], dec_inp], dim=1).float()
+    pred = model(batch_x, batch_x_mark, dec_inp, batch_y_mark).detach()
 
-        global_input_output_pairs.append({
-            'input': x_np,
-            'output': pred_np,
-            'labels': y_np
-        })
+    x_np = data_set.inverse_transform(batch_x[0,:,:].detach().numpy())[:,0]
+    y_np = data_set.inverse_transform(batch_y[0,-args.pred_len:,:].detach().numpy())[:,0]
+    pred_np = data_set.inverse_transform(pred[0,:,:].detach().numpy())[:,0]
+
+    global_input_output_pairs.append({
+        'input': x_np,
+        'output': pred_np,
+        'labels': y_np
+    })
 
 
     
 
 if __name__ == '__main__':
-    # Start the Flask server in a separate thread
-    from threading import Thread
-    flask_thread = Thread(target=lambda: app.run(debug=True, use_reloader=False))
-    flask_thread.start()
     
-    # Run the inference loop
-    run_inference_loop()
-
-    # Wait for the Flask server to end
-    flask_thread.join()
+    app.run()
+    
